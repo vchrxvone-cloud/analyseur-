@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0a1727">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Analyseur de mobilisation</title>
+</head>
+<body>
+<div class="shell">
+  <header class="mobile-topbar" aria-label="Navigation mobile">
+    <button id="mobileMenuButton" class="mobile-icon-button" type="button" aria-label="Ouvrir le menu" aria-expanded="false">☰</button>
+    <div class="mobile-title"><strong>Mobilisation</strong><span>Montpellier</span></div>
+    <button id="mobilePanelsButton" class="mobile-icon-button" type="button" aria-label="Ouvrir ou fermer tous les volets">▤</button>
+  </header>
+  <button id="mobileNavBackdrop" class="mobile-nav-backdrop" type="button" aria-label="Fermer le menu"></button>
+
+  <aside>
+    <div class="brand"><b>Mobilisation</b><span>Montpellier · 139 bureaux</span></div>
+    <button class="active" data-tab="map">Carte interactive</button>
+    <button data-tab="global">Analyse globale</button>
+    <button data-tab="participation">Participation électorale</button>
+    <button data-tab="results">Résultats et explication</button>
+    <button data-tab="comparison">Comparaison</button>
+    <button data-tab="customIndex">Indice personnalisé</button>
+    <button data-tab="ages" class="global-hidden-tab">Âges</button>
+    <button data-tab="social" class="global-hidden-tab">Socio-économique</button>
+    <button data-tab="services">Services à la population</button>
+    <button data-tab="schemas">Schémas</button>
+    <button data-tab="dataPacks">Nos données</button>
+    <div class="foot">171 247 inscrits<br><small>Données agrégées et anonymisées</small></div>
+  </aside>
+  <main>
+    <section id="map" class="tab active map-tab">
+      <iframe id="mapFrame" src="assets/prototype/mobilisation_map.html"></iframe>
+      <details class="map-fiscal-import">
+        <summary>Données fiscales IRIS</summary>
+        <div class="map-fiscal-import-body">
+          <p>Charger les CSV Filosofi pour afficher la part des ménages fiscaux imposés et le poids des impôts.</p>
+          <label class="fiscal-file-label">Importer les CSV
+            <input id="fiscalCsvInput" type="file" accept=".csv,text/csv" multiple>
+          </label>
+          <div id="fiscalImportStatus" class="fiscal-import-status">Aucune donnée fiscale importée.</div>
+        </div>
+      </details>
+      <aside id="bureauPanel" class="bureau-panel">
+        <button id="closePanel" class="close-panel">×</button>
+        <div id="bureauPanelContent"></div>
+      </aside>
+    </section>
+
+    <section id="global" class="tab content">
+      <h1>Analyse globale</h1>
+      <div id="globalCards" class="cards"></div>
+      <div class="panel"><h2>Répartition femmes / hommes</h2><div id="gender"></div></div>
+    
+  <div class="true-global-analysis">
+    <div class="true-global-head">
+      <div>
+        <h2>Âge et contexte socio-économique</h2>
+        <p>Lecture par bureau de vote ou par IRIS, avec sélection d’un territoire précis.</p>
+      </div>
+      <div class="true-global-controls">
+        <div class="true-global-toggle">
+          <button id="trueGlobalBureau" class="active" type="button">Bureaux</button>
+          <button id="trueGlobalIris" type="button">IRIS</button>
+        </div>
+        <select id="trueGlobalArea"></select>
+      </div>
+    </div>
+
+    <div id="trueGlobalMethod" class="true-global-method"></div>
+
+    <section class="true-global-category">
+      <h3>Âge et démographie</h3>
+      <div id="trueGlobalAge" class="true-global-grid"></div>
+    </section>
+
+    <section class="true-global-category">
+      <h3>Contexte socio-économique</h3>
+      <div id="trueGlobalSocio" class="true-global-grid"></div>
+    </section>
+
+    <section class="true-global-category">
+      <h3>Catégories socioprofessionnelles</h3>
+      <div id="trueGlobalPcs" class="true-global-bars"></div>
+    </section>
+  </div>
+
+  
+</section>
+
+
+    <section id="comparison" class="tab content decision-page">
+      <div class="page-head">
+        <div>
+          <h1>Comparer les territoires</h1>
+          <p>Mettre côte à côte deux bureaux ou deux IRIS, comprendre les écarts et les situer par rapport à Montpellier.</p>
+        </div>
+      </div>
+      
+    <div class="panel territory-compare-panel">
+      <div class="compare-territory-controls">
+        <label>Découpage
+          <select id="territoryCompareLevel">
+            <option value="bureau">Bureaux de vote</option>
+            <option value="iris">IRIS</option>
+          </select>
+        </label>
+        <label>Premier territoire<select id="territoryCompareA"></select></label>
+        <label>Second territoire<select id="territoryCompareB"></select></label>
+      </div>
+      <div id="territoryCompareSummary" class="territory-compare-summary"></div>
+      <div id="territoryCompareTable" class="territory-compare-table"></div>
+    </div>
+
+    
+    </section>
+
+    <section id="customIndex" class="tab content decision-page">
+  <div class="page-head">
+    <div>
+      <h1>Trouver les territoires qui correspondent à vos priorités</h1>
+      <p>Choisissez un objectif, ajustez ce qui compte pour vous, puis découvrez clairement pourquoi chaque territoire est bien ou mal classé.</p>
+    </div>
+  </div>
+  <div class="panel custom-index-panel intuitive-index">
+    <div class="index-step"><span>1</span><div><h2>Que recherchez-vous ?</h2><p>Choisissez un profil de départ. Vous pourrez ensuite l’adapter.</p></div></div>
+    <div class="custom-index-top">
+      <label>Découpage
+        <select id="customIndexLevel"><option value="bureau">Bureaux de vote</option><option value="iris">IRIS</option></select>
+      </label>
+      <label>Objectif
+        <select id="customIndexPreset">
+          <option value="daily">Bien vivre au quotidien</option>
+          <option value="affordable">Territoires socialement plus accessibles</option>
+          <option value="dynamic">Dynamisme et profils actifs</option>
+          <option value="mobilisation">Potentiel de mobilisation</option>
+          <option value="custom">Créer mon propre classement</option>
+        </select>
+      </label>
+      <button id="customIndexReset" type="button">Revenir au profil proposé</button>
+    </div>
+
+    <div class="index-step"><span>2</span><div><h2>Qu’est-ce qui compte le plus ?</h2><p>Pour chaque préférence, choisissez : ignoré, peu important, important ou très important.</p></div></div>
+    <div id="customIndexCriteria" class="custom-index-criteria"></div>
+
+    <div class="index-step"><span>3</span><div><h2>Quels territoires correspondent le mieux ?</h2><p>Le classement est recalculé immédiatement. Le score sert uniquement à comparer les territoires selon vos choix.</p></div></div>
+    <div class="custom-index-results">
+      <div>
+        <div class="index-section-title"><h3>Meilleures correspondances</h3><small>Rang 1 = territoire le plus proche de vos priorités</small></div>
+        <div id="customIndexRanking" class="custom-index-ranking"></div>
+      </div>
+      <div>
+        <div class="index-section-title"><h3>Pourquoi ce classement ?</h3><small>Valeurs réelles comparées à la médiane de Montpellier</small></div>
+        <select id="customIndexArea"></select>
+        <div id="customIndexDetail" class="custom-index-detail"></div>
+      </div>
+    </div>
+    <div class="custom-index-method"><b>À retenir :</b> ce classement traduit uniquement vos préférences. Il ne mesure ni la qualité générale d’un quartier, ni une performance officielle.</div>
+  </div>
+</section>
+
+    <section id="ages" class="tab content">
+      <h1>Tranches d’âge de cinq ans</h1>
+      <div class="panel" id="ageTable"></div>
+    </section>
+
+    <section id="social" class="tab content">
+      <div class="page-head">
+        <div>
+          <h1>Profil socio-économique territorial</h1>
+          <p>Résultats calculés par adresse puis agrégés par bureau.</p>
+        </div>
+        <select id="socialBureauSelect"><option value="all">Ensemble de Montpellier</option></select>
+      </div>
+
+      <div class="method-banner">
+        Adresse électorale → Base Adresse Nationale → carreau Filosofi 2021 de 200 m → pondération par bureau.
+        Les valeurs décrivent un environnement territorial et non une personne déterminée.
+      </div>
+
+      <div id="socialCards" class="cards social-cards"></div>
+
+      <div class="social-grid">
+        <div class="panel"><h2>Économie et logement</h2><div id="socialMetrics"></div></div>
+        <div class="panel"><h2>Qualité de l’assignation</h2><div id="qualityMetrics"></div></div>
+      </div>
+
+      <div class="panel">
+        <div class="table-head">
+          <div><h2>Comparaison des 139 bureaux</h2><p>Clique sur une ligne pour ouvrir le bureau sur la carte.</p></div>
+          <input id="socialSearch" type="search" placeholder="Rechercher un bureau…">
+        </div>
+        <div class="table-wrap">
+          <table class="social-table">
+            <thead><tr>
+              <th id="participationTerritoryHeader">Bureau</th><th>Inscrits</th><th>Niveau de vie</th><th>Pauvreté</th>
+              <th>Propriétaires</th><th>Logements sociaux</th><th>Diplômés sup.</th><th>Cadres</th><th>Employés</th><th>Ouvriers</th><th>Couverture IRIS</th>
+            </tr></thead>
+            <tbody id="socialTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel limitation"><h2>Méthode IRIS</h2><p>Les niveaux de diplôme et catégories socioprofessionnelles proviennent du recensement Insee 2022 à l’IRIS. Chaque adresse géocodée est rattachée au contour IRIS 2024, puis les valeurs sont pondérées par le nombre d’électeurs de l’adresse avant agrégation par bureau.</p></div>
+    </section>
+
+
+
+    <section id="participation" class="tab content participation-tab">
+      <div class="page-head">
+        <div>
+          <h1>Participation électorale</h1>
+          <p>Moyenne pondérée par bureau ou par IRIS, historique des scrutins et réserve de mobilisation.</p>
+        </div>
+        <div class="participation-head-controls">
+          <select id="participationLevel">
+            <option value="bureau">Bureaux de vote</option>
+            <option value="iris">IRIS</option>
+          </select>
+          <select id="participationBureau"></select>
+        </div>
+      </div>
+
+      <div class="method-banner">
+        Les poids combinent l’importance du scrutin et sa récence. Le poids total d’une famille électorale est partagé entre ses tours. Les scrutins manquants sont ignorés et les poids sont renormalisés pour chaque bureau.
+      </div>
+
+      <div id="participationGlobalCards" class="cards"></div>
+
+      <div class="participation-layout">
+        <div class="panel">
+          <div class="schema-panel-head">
+            <div><h2>Clé de pondération</h2><p>Les poids sont modifiables. La moyenne et le classement sont recalculés immédiatement.</p></div>
+            <button id="participationResetWeights" type="button">Poids recommandés</button>
+          </div>
+          <div id="participationWeights" class="participation-weights"></div>
+        </div>
+        <div class="panel">
+          <h2 id="participationProfileTitle">Profil du territoire sélectionné</h2>
+          <div id="participationSelectedSummary"></div>
+          <p class="chart-reading-note">Historique brut de la participation par scrutin. Cette courbe ne change pas avec les poids : les poids modifient uniquement la moyenne pondérée et le classement.</p>
+          <div class="schema-canvas-wrap participation-chart-wrap"><canvas id="participationChart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="table-head">
+          <div><h2 id="participationRankingTitle">Classement des bureaux</h2><p>La réserve correspond à 100 moins la participation pondérée.</p></div>
+          <input id="participationSearch" type="search" placeholder="Rechercher un bureau…">
+        </div>
+        <div class="table-wrap">
+          <table class="social-table participation-table">
+            <thead><tr><th>Rang de participation</th><th>Territoire</th><th>Participation pondérée</th><th>Participation 2024</th><th>Réserve de mobilisation</th><th>Écart de participation</th><th>Scrutins disponibles</th></tr></thead>
+            <tbody id="participationRankingBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Détail par scrutin</h2>
+        <div class="table-wrap">
+          <table class="social-table">
+            <thead><tr><th>Élection</th><th>Date</th><th>Poids</th><th>Inscrits</th><th>Votants</th><th>Participation</th><th>Écart à Montpellier</th></tr></thead>
+            <tbody id="participationElectionBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel limitation">
+        <h2>Limites des données</h2>
+        <p>Les fichiers de 2015 et 2017 ne couvrent pas toujours les 139 bureaux actuels. Les valeurs IRIS sont des estimations spatiales obtenues en répartissant les volumes de chaque bureau selon la part de sa surface située dans chaque IRIS. Le fichier fourni pour le second tour des législatives 2024 couvre 83 bureaux. Une valeur anormale de 100 % apparaît au bureau 63 au premier tour des législatives 2024 dans le fichier source ; elle est conservée et signalée.</p>
+      </div>
+    </section>
+
+
+    <section id="results" class="tab content results-tab">
+      <div class="page-head">
+        <div>
+          <h1>Résultats et facteurs territoriaux</h1>
+          <p>Consulter 84 scrutins par bureau et analyser les facteurs territoriaux associés, de 1992 à 2026.</p>
+        </div>
+        <div class="results-head-controls">
+          <select id="resultsElection"></select>
+          <select id="resultsLevel"><option value="bureau">Bureaux de vote</option><option value="iris">IRIS</option></select>
+          <select id="resultsParty"></select>
+          <select id="resultsArea"></select>
+        </div>
+      </div>
+
+      <div class="method-banner">
+        Les 84 scrutins disponibles dans les fichiers open data sont embarqués. L’analyse territoriale est activée uniquement lorsque le fichier contient des résultats par bureau. Elle mesure des associations et ne permet pas d’affirmer qu’une catégorie sociale déterminée a voté pour une liste donnée. Pour les IRIS, les résultats sont estimés spatialement tant que la répartition précise des électeurs par adresse n’est pas intégrée. Pour les scrutins anciens, les limites des bureaux ont évolué et l’explication doit être interprétée avec prudence.
+      </div>
+
+      <div id="resultsModelStatus" class="results-model-status"></div>
+      <div id="resultsCards" class="cards"></div>
+
+      <div class="results-grid">
+        <div class="panel">
+          <h2 id="resultsTerritoryTitle">Résultat dans ce territoire</h2>
+          <div id="resultsTerritorySummary"></div>
+          <div class="schema-canvas-wrap"><canvas id="resultsObservedChart"></canvas></div>
+        </div>
+        <div class="panel">
+          <h2 id="resultsExplanationTitle">Lecture simple du résultat</h2>
+          <div id="resultsExplanation"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="schema-panel-head">
+          <div>
+            <h2>Relations entre le résultat et le profil des territoires</h2>
+            <p>Ces valeurs indiquent si les territoires où un indicateur est élevé ont tendance à donner un score plus élevé ou plus faible à la liste. Elles ne décrivent pas le vote individuel.</p>
+          </div>
+        </div>
+        <div class="correlation-scale"><span>−1 : relation négative forte</span><span>0 : peu de relation</span><span>+1 : relation positive forte</span></div>
+        <div id="resultsCorrelations" class="results-correlations"></div>
+        <button id="resultsToggleCorrelations" class="secondary-action" type="button">Voir toutes les relations</button>
+      </div>
+
+      <div class="panel">
+        <div class="schema-panel-head">
+          <div>
+            <h2>Influence estimée des caractéristiques du territoire</h2>
+            <p>Le modèle estime comment chaque caractéristique modifie le résultat attendu lorsque les autres caractéristiques sont prises en compte en même temps.</p>
+          </div>
+        </div>
+        <div id="resultsModelQuality" class="results-model-quality"></div>
+        <div id="resultsContributions" class="results-contributions"></div>
+        <p class="model-reading-warning">Ces effets sont des associations territoriales. Ils ne signifient pas que les personnes appartenant à une catégorie ont voté de cette manière.</p>
+      </div>
+
+      <div class="panel">
+        <div class="table-head">
+          <div><h2>Classement territorial</h2><p>Score de la liste sélectionnée dans chaque territoire.</p></div>
+          <input id="resultsSearch" type="search" placeholder="Rechercher un territoire…">
+        </div>
+        <div class="table-wrap">
+          <table class="social-table">
+            <thead><tr><th>Rang pour la liste</th><th>Territoire</th><th>Résultat</th><th>Écart à Montpellier</th><th>Résultat attendu</th><th>Écart réel / attendu</th></tr></thead>
+            <tbody id="resultsRankingBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel limitation">
+        <h2>Précautions de lecture</h2>
+        <p>Une corrélation élevée ne démontre pas une causalité. Le modèle peut aussi être affecté par la proximité entre plusieurs variables, par exemple diplômés du supérieur, cadres et niveau de vie. L’écart entre le résultat réel et le résultat attendu représente la partie que le profil territorial ne permet pas de reproduire.</p>
+      </div>
+    </section>
+
+    <section id="services" class="tab content services-tab">
+      <div class="services-head">
+        <div>
+          <h1>Services à la population</h1>
+          <p>Indicateurs territoriaux datés sur les transports, le vélo et les chantiers structurants.</p>
+        </div>
+        <div class="services-selectors">
+          <select id="servicesLevel"><option value="global">Montpellier</option><option value="iris">IRIS</option><option value="bureaux">Bureaux de vote</option></select>
+          <select id="servicesArea" disabled><option value="all">Ensemble de Montpellier</option></select>
+        </div>
+      </div>
+
+      <div class="service-date-strip">
+        <span><b>Transports :</b> service GTFS du 16/10/2026</span>
+        <span><b>Comptages vélo :</b> année complète 2024</span>
+        <span><b>Chantiers :</b> situation au 28/07/2026</span>
+      </div>
+
+      <div class="service-tram-filters">
+        <span>Lignes de tram affichées :</span>
+        <button class="tram-filter active" data-line="1">L1</button><button class="tram-filter active" data-line="2">L2</button>
+        <button class="tram-filter active" data-line="3">L3</button><button class="tram-filter active" data-line="4">L4</button>
+        <button class="tram-filter active" data-line="5">L5</button><button id="tramAll" class="tram-all active">Toutes</button>
+      </div>
+
+      <div id="servicesCards" class="cards service-cards"></div>
+
+      <div class="services-layout">
+        <div class="panel service-map-panel">
+          <div class="service-panel-title"><h2>Carte des services</h2><span id="servicesMapStatus"></span></div>
+          <iframe id="servicesMapFrame" src="assets/prototype/services_map.html"></iframe>
+        </div>
+        <div class="service-side">
+          <div class="panel"><h2>Transports collectifs <small>16/10/2026</small></h2><div id="serviceTransportMetrics"></div></div>
+          <div class="panel"><h2>Mobilités cyclables <small>2024</small></h2><div id="serviceCycleMetrics"></div><p class="service-note">Les comptages 2025 sont incomplets et s’arrêtent au 11/09/2025 ; ils ne sont pas utilisés comme valeur principale.</p></div>
+          <div class="panel"><h2>Chantiers structurants <small>28/07/2026</small></h2><div id="serviceWorksMetrics"></div><p class="service-note">Sont retenus uniquement les chantiers d’au moins 90 jours avec fermeture, alternat, interdiction, neutralisation, déviation ou classement « chantier gênant ».</p></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="table-head">
+          <div>
+            <h2>Chantiers longs et encombrants</h2>
+            <p>En cours au 28/07/2026 ou programmés avant le 28/07/2027. Les événements brefs et temporaires sont exclus.</p>
+          </div>
+          <input id="serviceWorksSearch" type="search" placeholder="Adresse, nature, type ou incidence…">
+        </div>
+        <div class="table-wrap"><table class="social-table major-works-table">
+          <thead><tr><th>Statut</th><th>Adresse</th><th>Début</th><th>Fin</th><th>Durée</th><th>Nature</th><th>Incidence</th></tr></thead>
+          <tbody id="serviceWorksBody"></tbody>
+        </table></div>
+      </div>
+
+      <div class="panel source-method-panel">
+        <h2>Méthode et dates</h2>
+        <p><b>Réseau et horaires :</b> fichiers TaM/GTFS fournis, service daté du 16 octobre 2026.</p>
+        <p><b>Vélo :</b> 1 736 362 passages enregistrés en 2024 dans les archives disponibles, sur les compteurs ayant transmis des données. La période 2025 est partielle, du 1er janvier au 11 septembre 2025.</p>
+        <p><b>Chantiers :</b> sélection effectuée dans les fichiers géographiques fournis, à la date de référence du 28 juillet 2026. La durée affichée correspond aux dates déclarées dans la source et ne garantit pas une gêne continue pendant toute la période.</p>
+      </div>
+    </section>
+
+
+    <section id="dataPacks" class="tab content data-packs-page">
+      <div class="page-head">
+        <div>
+          <h1>Nos données</h1>
+          <p>Sources, méthode, couverture, limites et évaluation de chaque pack utilisé par l’analyseur.</p>
+        </div>
+        <div class="data-rating-key"><b>Grille d’évaluation</b><span>Source · précision territoriale · couverture · actualité · transparence méthodologique</span></div>
+      </div>
+      <div class="data-audit-banner">
+        <b>Qui évalue ?</b> L’Analyseur de mobilisation applique une grille identique à tous les packs. La note ne juge pas l’intérêt politique d’une donnée : elle mesure sa solidité pour comparer les territoires.
+      </div>
+      <div class="data-pack-grid">
+        <article class="data-pack-card rating-5">
+          <div class="data-pack-head"><div><span class="data-pack-tag">Référence territoriale</span><h2>Pack carte et bureaux de vote</h2></div><div class="data-score">5,0<span>/5</span></div></div>
+          <p class="data-verdict">Découpage officiel et indispensable : contours, numéros, adresses et centres des 139 bureaux sont la base de toutes les comparaisons.</p>
+          <dl><div><dt>Source</dt><dd>Open data de la Ville de Montpellier — contours des bureaux et informations de localisation.</dd></div><div><dt>Méthode</dt><dd>Utilisation directe des géométries officielles, sans redessin manuel.</dd></div><div><dt>Données incluses</dt><dd>Polygones, numéros, noms, adresses, cantons, circonscriptions et rattachements spatiaux.</dd></div><div><dt>Limite</dt><dd>Les périmètres peuvent évoluer entre deux scrutins ; l’année du découpage doit toujours être contrôlée.</dd></div></dl>
+        </article>
+        <article class="data-pack-card rating-5">
+          <div class="data-pack-head"><div><span class="data-pack-tag">Résultats officiels</span><h2>Pack résultats électoraux</h2></div><div class="data-score">5,0<span>/5</span></div></div>
+          <p class="data-verdict">Pack de référence : les résultats bruts fournis par la Ville sont fidèlement repris et sont pleinement pertinents pour analyser les rapports de force par bureau.</p>
+          <dl><div><dt>Source</dt><dd>Fichiers électoraux officiels de la Ville de Montpellier, dont les fichiers détaillés 2024 et 2026.</dd></div><div><dt>Méthode</dt><dd>Conservation des voix, exprimés, inscrits, scores, tours, listes et candidats ; aucun score de bureau n’est réestimé.</dd></div><div><dt>Données incluses</dt><dd>84 scrutins, résultats globaux, résultats territoriaux disponibles, vainqueur, deuxième candidat, voix, pourcentages et familles politiques.</dd></div><div><dt>Limite</dt><dd>Pour les IRIS, la projection est spatiale ; pour les scrutins anciens, les limites des bureaux ont parfois changé. Les résultats bruts par bureau restent exacts.</dd></div></dl>
+        </article>
+        <article class="data-pack-card rating-45">
+          <div class="data-pack-head"><div><span class="data-pack-tag">Corps électoral</span><h2>Pack démographie électorale</h2></div><div class="data-score">4,5<span>/5</span></div></div>
+          <p class="data-verdict">Très forte couverture et excellente précision au niveau du bureau, à partir de données individuelles ensuite agrégées et anonymisées.</p>
+          <dl><div><dt>Source</dt><dd>Liste électorale complète fournie pour Montpellier.</dd></div><div><dt>Méthode</dt><dd>Agrégation anonymisée par bureau ; calcul des effectifs, sexes, âges, médianes et tranches quinquennales.</dd></div><div><dt>Données incluses</dt><dd>171 247 inscrits, femmes/hommes, âge moyen et médian, tranches de 18–19 ans à 85 ans et plus.</dd></div><div><dt>Limite</dt><dd>343 âges manquants ; la population électorale n’est pas identique à l’ensemble de la population résidente.</dd></div></dl>
+        </article>
+        <article class="data-pack-card rating-4">
+          <div class="data-pack-head"><div><span class="data-pack-tag">Contexte social</span><h2>Pack socio-économique et IRIS</h2></div><div class="data-score">4,0<span>/5</span></div></div>
+          <p class="data-verdict">Pack riche et cohérent pour comparer les profils territoriaux, mais les valeurs de bureau sont des estimations issues du rattachement spatial des électeurs.</p>
+          <dl><div><dt>Source</dt><dd>Insee recensement 2022, contours IRIS 2024, Base Adresse Nationale et données Filosofi.</dd></div><div><dt>Méthode</dt><dd>Adresse électorale → géocodage BAN → IRIS ou carreau Filosofi → agrégation pondérée par bureau.</dd></div><div><dt>Données incluses</dt><dd>Chômage, diplômes, cadres, professions intermédiaires, employés, ouvriers, retraités, familles monoparentales, propriétaires, locataires, logements sociaux, pauvreté et niveau de vie.</dd></div><div><dt>Limite</dt><dd>161 318 électeurs rattachés à un IRIS ; les non-géocodés et les changements de population introduisent une marge d’incertitude.</dd></div></dl>
+        </article>
+        <article class="data-pack-card rating-4">
+          <div class="data-pack-head"><div><span class="data-pack-tag">Fiscalité</span><h2>Pack fiscal Filosofi</h2></div><div class="data-score">4,0<span>/5</span></div></div>
+          <p class="data-verdict">Source officielle robuste à l’IRIS ; la lecture par bureau dépend d’une pondération entre plusieurs IRIS.</p>
+          <dl><div><dt>Source</dt><dd>Bases Insee Filosofi 2021 DEC et DISP.</dd></div><div><dt>Méthode</dt><dd>Correspondance IRIS–bureau pondérée par le chevauchement spatial déjà embarqué dans le projet.</dd></div><div><dt>Données incluses</dt><dd>Part des foyers fiscaux imposables et part des impôts dans le revenu disponible.</dd></div><div><dt>Limite</dt><dd>Donnée officielle à l’IRIS, mais valeur de bureau reconstituée ; certains IRIS sont soumis au secret statistique.</dd></div></dl>
+        </article>
+        <article class="data-pack-card rating-45">
+          <div class="data-pack-head"><div><span class="data-pack-tag">Mobilisation</span><h2>Pack participation électorale</h2></div><div class="data-score">4,5<span>/5</span></div></div>
+          <p class="data-verdict">Les taux observés sont très fiables ; l’indice synthétique est transparent mais reste un choix analytique pondéré.</p>
+          <dl><div><dt>Source</dt><dd>Fichiers officiels de participation par scrutin et par bureau.</dd></div><div><dt>Méthode</dt><dd>Taux finaux conservés ; indice global calculé par famille électorale, tour et facteur de récence, avec renormalisation en cas de scrutin manquant.</dd></div><div><dt>Données incluses</dt><dd>Présidentielles, législatives, européennes, régionales et départementales, évolutions, moyennes et indice de mobilisation.</dd></div><div><dt>Limite</dt><dd>Les fichiers anciens ne couvrent pas toujours les 139 bureaux actuels ; certaines valeurs sources atypiques sont conservées et signalées.</dd></div></dl>
+        </article>
+        <article class="data-pack-card rating-4">
+          <div class="data-pack-head"><div><span class="data-pack-tag">Services publics</span><h2>Pack transports, vélo et chantiers</h2></div><div class="data-score">4,0<span>/5</span></div></div>
+          <p class="data-verdict">Très utile pour mesurer l’accessibilité territoriale, avec une bonne traçabilité des dates, mais il s’agit d’une photographie qui évolue rapidement.</p>
+          <dl><div><dt>Source</dt><dd>TaM/GTFS, données de stations et arrêts, infrastructures cyclables, Vélomagg, compteurs vélo et fichiers de chantiers.</dd></div><div><dt>Méthode</dt><dd>Distances, densités et présence calculées par territoire ; filtrage des chantiers longs ou réellement gênants.</dd></div><div><dt>Données incluses</dt><dd>Tramways L1 à L5, stations, bus, REV, pistes cyclables, Vélomagg, compteurs, passages vélo et chantiers structurants.</dd></div><div><dt>Limite</dt><dd>GTFS daté du 16/10/2026, comptages principaux 2024 et chantiers au 28/07/2026 : une mise à jour régulière est nécessaire.</dd></div></dl>
+        </article>
+        <article class="data-pack-card rating-4">
+          <div class="data-pack-head"><div><span class="data-pack-tag">Cadre de vie</span><h2>Pack immobilier, commerces et accessibilité</h2></div><div class="data-score">4,0<span>/5</span></div></div>
+          <p class="data-verdict">Une lecture territoriale très utile du marché immobilier et de la vie quotidienne, avec une excellente source immobilière et une couverture commerciale OSM spatialement précise mais non exhaustive.</p>
+          <dl><div><dt>Sources</dt><dd>DVF+ 2026.1 (Cerema/DGFiP), SIRENE établissements actifs juillet 2026, géolocalisation SIRENE juillet 2026 et OSM_Metropole_economie (Montpellier Métropole/OpenStreetMap).</dd></div><div><dt>Méthode</dt><dd>23 976 ventes résidentielles 2021–2025 nettoyées et agrégées par IRIS ; commerces alimentaires OSM géolocalisés ; fichiers SIRENE établissements et géolocalisation disponibles pour la consolidation administrative ; distance et temps de marche actuellement estimés.</dd></div><div><dt>Données incluses</dt><dd>Prix médian au m², évolution 2021–2025, transactions, fiabilité, commerces pour 1 000 habitants, supermarchés, supérettes, épiceries, distance et temps de marche estimés.</dd></div><div><dt>Limite</dt><dd>Le temps de marche reste une estimation et non un itinéraire réseau réel. OSM peut omettre certains commerces ; Les fichiers SIRENE sont documentés mais ne sont pas encore utilisés dans tous les indicateurs affichés ; OSM décrit mieux l’offre visible au public mais peut omettre certains commerces.</dd></div></dl>
+        </article>
+        <article class="data-pack-card rating-35">
+          <div class="data-pack-head"><div><span class="data-pack-tag">Données dérivées</span><h2>Pack analyses, comparaisons et indices</h2></div><div class="data-score">3,5<span>/5</span></div></div>
+          <p class="data-verdict">Très pertinent pour explorer et comparer, mais il ne s’agit pas d’observations brutes : les résultats dépendent des variables et pondérations choisies.</p>
+          <dl><div><dt>Source</dt><dd>Combinaison des packs démographique, socio-économique, électoral, participation et services.</dd></div><div><dt>Méthode</dt><dd>Classements, profils normalisés, relations entre critères, régressions territoriales et indice personnalisable.</dd></div><div><dt>Données incluses</dt><dd>Analyse globale, comparateur, schémas, distributions, corrélations, résultats expliqués et indice synthétique configurable.</dd></div><div><dt>Limite</dt><dd>Une association territoriale n’est pas une causalité et ne permet pas d’attribuer un comportement individuel à un groupe social.</dd></div></dl>
+        </article>
+      </div>
+      <div class="panel data-coverage-panel"><h2>Couverture générale</h2><p>L’analyseur rassemble ainsi toutes les familles actuellement embarquées : géographie électorale, démographie, âge, sexe, socio-économie, catégories socioprofessionnelles, diplômes, logement, pauvreté, niveau de vie, fiscalité, participation, résultats politiques, transports, vélo, chantiers et données analytiques dérivées.</p></div>
+    </section>
+
+    <section id="schemas" class="tab content">
+      <div class="page-head">
+        <div>
+          <h1>Schémas des données</h1>
+          <p>Explorer les grands profils sociaux, démographiques, électoraux, immobiliers et commerciaux sous forme d’hexagones et de courbes.</p>
+        </div>
+        <div class="schema-head-controls">
+          <label>Découpage
+            <select id="schemaTerritory">
+              <option value="iris">IRIS</option>
+              <option value="bureau">Bureaux de vote</option>
+            </select>
+          </label>
+          <label>Territoire
+            <select id="schemaArea"></select>
+          </label>
+        </div>
+      </div>
+
+      <div class="schema-tabs">
+        <button class="active" data-schema-view="gallery">Galerie thématique</button>
+        <button data-schema-view="profile">Hexagone détaillé</button>
+        <button data-schema-view="trends">Courbes d’évolution</button>
+        <button data-schema-view="distribution">Distribution</button>
+        <button data-schema-view="relation">Relation entre deux critères</button>
+        <button data-schema-view="ranking">Classement</button>
+      </div>
+
+      <div id="schemaGallery" class="schema-view active">
+        <div class="schema-reading-banner">
+          <strong>Comment lire les hexagones ?</strong>
+          <span>La ligne de référence représente la moyenne de Montpellier. Plus la surface bleue s’étend vers l’extérieur, plus la valeur du territoire est supérieure à la moyenne des autres territoires. Plus elle reste proche du centre, plus la valeur est inférieure à la moyenne.</span>
+        </div>
+        <div id="schemaGalleryGrid" class="schema-gallery-grid"></div>
+      </div>
+
+      <div id="schemaTrends" class="schema-view">
+        <div class="schema-reading-banner">
+          <strong>Comment lire les courbes ?</strong>
+          <span>La courbe bleue représente le territoire sélectionné. La ligne de comparaison représente la moyenne de Montpellier lorsque celle-ci est disponible.</span>
+        </div>
+        <div id="schemaTrendGrid" class="schema-gallery-grid schema-trend-grid"></div>
+      </div>
+
+      <div id="schemaProfile" class="schema-view">
+        <div class="panel">
+          <div class="schema-panel-head">
+            <div>
+              <h2>Profil synthétique</h2>
+              <p>Position du territoire par rapport à la moyenne de Montpellier.</p>
+            </div>
+            <select id="profilePreset">
+              <option value="social">Profil social</option>
+              <option value="housing">Logement et niveau de vie</option>
+              <option value="demography">Démographie</option>
+            </select>
+          </div>
+          <div class="schema-canvas-wrap"><canvas id="profileChart"></canvas></div>
+          <div id="profileLegend" class="schema-note"></div>
+        </div>
+      </div>
+
+      <div id="schemaDistribution" class="schema-view">
+        <div class="panel">
+          <div class="schema-panel-head">
+            <div>
+              <h2>Distribution d’un indicateur</h2>
+              <p>Répartition de tous les territoires en cinq classes.</p>
+            </div>
+            <select id="distributionIndicator"></select>
+          </div>
+          <div class="schema-canvas-wrap"><canvas id="distributionChart"></canvas></div>
+          <div id="distributionSummary" class="schema-summary"></div>
+        </div>
+      </div>
+
+      <div id="schemaRelation" class="schema-view">
+        <div class="panel">
+          <div class="schema-panel-head relation-controls">
+            <div>
+              <h2>Relation entre deux critères</h2>
+              <p>Chaque point représente un territoire.</p>
+            </div>
+            <label>Axe horizontal<select id="relationX"></select></label>
+            <label>Axe vertical<select id="relationY"></select></label>
+          </div>
+          <div class="schema-canvas-wrap schema-scatter-wrap"><canvas id="relationChart"></canvas></div>
+          <div id="relationSummary" class="schema-summary"></div>
+        </div>
+      </div>
+
+      <div id="schemaRanking" class="schema-view">
+        <div class="panel">
+          <div class="schema-panel-head">
+            <div>
+              <h2>Classement des territoires</h2>
+              <p>Les dix valeurs les plus fortes ou les plus faibles.</p>
+            </div>
+            <div class="ranking-controls">
+              <select id="rankingIndicator"></select>
+              <select id="rankingOrder">
+                <option value="desc">Valeurs les plus fortes</option>
+                <option value="asc">Valeurs les plus faibles</option>
+              </select>
+            </div>
+          </div>
+          <div class="schema-canvas-wrap"><canvas id="rankingChart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="panel schema-explanation">
+        <h2>Lecture</h2>
+        <p><strong>Hexagones :</strong> la moyenne de Montpellier sert de référence. Plus le bleu va loin vers l’extérieur, plus la valeur du territoire est supérieure à la moyenne du reste de Montpellier. Plus il reste près du centre, plus elle est inférieure.</p><p><strong>Courbes :</strong> elles montrent une évolution dans le temps lorsque plusieurs dates sont disponibles. Les schémas décrivent des territoires agrégés et ne permettent pas d’attribuer une caractéristique ou un comportement à une personne déterminée.</p>
+      </div>
+    </section>
+
+  
+    <div id="territoryDataModal" class="territory-data-modal" aria-hidden="true">
+      <div class="territory-data-dialog" role="dialog" aria-modal="true" aria-labelledby="territoryDataTitle">
+        <div class="territory-data-head">
+          <div>
+            <span>Fiche territoriale complète</span>
+            <h2 id="territoryDataTitle">Territoire</h2>
+          </div>
+          <button id="territoryDataClose" type="button" aria-label="Fermer">×</button>
+        </div>
+        <div id="territoryDataContent" class="territory-data-content"></div>
+      </div>
+    </div>
+
+</main>
+</div>
+<script src="assets/data/demographics.js"></script>
+<script src="assets/data/socioeconomic.js"></script>
+<script src="assets/data/iris_montpellier.js"></script>
+<script src="assets/data/services_population.js"></script>
+<script src="assets/data/participation.js"></script>
+<script src="assets/data/fiscal_crosswalk.js"></script>
+<script src="assets/data/election_results.js"></script>
+<script src="assets/data/immo_commerce_pack.js"></script>
+<script src="renderer.js"></script>
+</body>
+</html>

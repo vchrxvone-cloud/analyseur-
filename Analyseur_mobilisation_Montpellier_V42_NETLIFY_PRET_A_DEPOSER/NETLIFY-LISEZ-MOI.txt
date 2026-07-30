@@ -1,0 +1,10 @@
+MISE EN LIGNE SUR TÉLÉPHONE
+
+1. Ouvrir https://app.netlify.com/drop
+2. Décompresser le ZIP V42.
+3. Faire glisser le dossier SITE-TELEPHONE-NETLIFY dans la zone Netlify Drop.
+4. Attendre la création du lien en .netlify.app.
+5. Ouvrir ce lien dans Safari sur iPhone.
+6. Appuyer sur Partager puis Ajouter à l’écran d’accueil.
+
+Pour une mise à jour ultérieure, glisser de nouveau le dossier SITE-TELEPHONE-NETLIFY dans la page de déploiement du même site Netlify.

@@ -1,0 +1,9 @@
+{
+  "name":"Analyseur de mobilisation Montpellier",
+  "short_name":"Mobilisation",
+  "start_url":"./",
+  "display":"standalone",
+  "background_color":"#07111f",
+  "theme_color":"#0a1727",
+  "icons":[{"src":"assets/icon.png","sizes":"512x512","type":"image/png"}]
+}

@@ -1,0 +1,742 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""><style>
+html,body,#map{height:100%;margin:0}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f2f2f2}.leaflet-container{background:#f2f2f2}.toolbar{position:absolute;z-index:1000;top:14px;left:54px;background:#0b1726f2;border:1px solid #31465e;border-radius:12px;padding:11px;color:white;box-shadow:0 8px 24px #0007;display:grid;gap:8px;min-width:270px}.toolbar label{display:grid;grid-template-columns:88px 1fr;align-items:center;gap:8px;font-size:12px;color:#b9c9d8}.toolbar select{width:100%;background:#13263a;color:white;border:1px solid #39516b;border-radius:8px;padding:8px}.toolbar-title{font-size:13px;font-weight:800}.legend{position:absolute;z-index:1000;bottom:20px;right:14px;background:#0b1726ee;color:white;border:1px solid #31465e;border-radius:11px;font-size:12px;min-width:210px;max-width:280px;box-shadow:0 8px 24px #0006;overflow:hidden}.legend summary{cursor:pointer;list-style:none;padding:10px 12px;font-weight:800;display:flex;align-items:center;justify-content:space-between;gap:12px}.legend summary::-webkit-details-marker{display:none}.legend summary::after{content:'▾';font-size:12px;color:#9fb3c8;transition:transform .18s ease}.legend:not([open]) summary::after{transform:rotate(90deg)}.legend-body{padding:0 12px 12px;border-top:1px solid #263c53;max-height:58vh;overflow:auto}.legend span{color:#a9bdd2}.legend-help{display:block;margin-top:8px;line-height:1.4}.iris-name-icon{background:transparent;border:0}.iris-name{display:flex;align-items:center;justify-content:center;transform:translate(-50%,-50%);color:#07111b;font-weight:800;font-size:10px;line-height:1.05;text-align:center;text-shadow:-1px -1px 0 #fff,1px -1px 0 #fff,-1px 1px 0 #fff,1px 1px 0 #fff,0 0 4px #fff;pointer-events:none;white-space:normal;width:100px}.leaflet-tooltip.zone-tip{background:#0a1624ef;color:#fff;border:1px solid #43617e;border-radius:8px;box-shadow:none;font-size:12px;line-height:1.45}.zone-number-icon{background:transparent;border:0}.zone-number{display:flex;align-items:center;justify-content:center;min-width:28px;height:22px;transform:translate(-14px,-11px);color:#000;font-weight:900;font-size:11px;text-shadow:-1px -1px 0 #fff,1px -1px 0 #fff,-1px 1px 0 #fff,1px 1px 0 #fff,0 0 4px #fff;pointer-events:none;white-space:nowrap}.compare-controls{display:none;gap:8px;border-top:1px solid #31465e;padding-top:8px}
+.compare-controls.active{display:grid}
+.compare-values{display:grid;gap:5px;margin-top:8px;font-size:11px}
+.compare-values b{color:#fff}.class-legend{display:grid;gap:5px;margin-top:8px}
+.class-row{display:flex;align-items:center;gap:8px;font-size:11px;color:#dce7f2}
+.class-swatch{width:22px;height:13px;border:1px solid rgba(255,255,255,.4);border-radius:2px;flex:none}
+.legend-gradient,
+
+.compare-controls{grid-template-columns:repeat(2,minmax(0,1fr))}
+.compare-controls.compare-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.compare-controls.compare-4{grid-template-columns:repeat(2,minmax(0,1fr))}
+.multi-criteria-legend{display:grid;gap:8px;margin-top:10px}
+
+.correlation-summary{display:grid;gap:7px;margin:3px 0 10px;padding:10px;border:1px solid rgba(255,255,255,.16);border-radius:8px;background:rgba(255,255,255,.05)}
+.correlation-strength{font-size:13px;font-weight:800;color:#fff}.correlation-coef{font-size:20px;font-weight:900;color:#fff}.correlation-detail{font-size:10px;color:#b8c8d8;line-height:1.4}
+.correlation-scale{display:grid;gap:4px;margin-top:8px}.correlation-scale-row{display:flex;align-items:center;gap:7px;font-size:10px;color:#dce7f2}
+.correlation-scale-row i{width:18px;height:10px;border-radius:2px;border:1px solid rgba(255,255,255,.3);flex:none}
+.correlation-matrix{width:100%;border-collapse:collapse;font-size:9px;margin-top:8px}.correlation-matrix th,.correlation-matrix td{border:1px solid rgba(255,255,255,.14);padding:4px;text-align:center}.correlation-matrix th{color:#cbd8e5;font-weight:700}.correlation-matrix td{color:#fff;font-weight:800}
+.correlation-pairs{display:grid;gap:6px;margin-top:8px}.correlation-pair{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;font-size:10px;color:#dce7f2}.correlation-pair b{font-size:11px}
+
+.main-service-filters{position:absolute;z-index:1000;top:14px;right:14px;width:min(310px,calc(100vw - 28px));background:#0b1726f2;border:1px solid #31465e;border-radius:12px;color:#fff;box-shadow:0 8px 24px #0007;overflow:hidden}
+.main-service-filters summary{cursor:pointer;padding:10px 12px;font-size:12px;font-weight:800;list-style:none;display:flex;justify-content:space-between}.main-service-filters summary::-webkit-details-marker{display:none}.main-service-filters summary:after{content:"▾";color:#9fb3c8}.main-service-filters:not([open]) summary:after{transform:rotate(90deg)}
+.main-filter-body{padding:0 10px 10px;border-top:1px solid #263c53;display:grid;gap:8px}.main-filter-row{display:flex;gap:6px;flex-wrap:wrap}.main-filter-row-title{font-size:10px;color:#9fb3c8;width:100%;margin-top:7px}
+.main-filter-btn{border:1px solid #39516b;background:#13263a;color:#b8c8d8;border-radius:999px;padding:6px 8px;font-size:10px;cursor:pointer}.main-filter-btn.active{background:#275d94;border-color:#5b9cff;color:#fff}.main-filter-btn.major.active{background:#7a2730;border-color:#dc6b77}
+.median-note{display:block;margin-top:7px;color:#9fb3c8;font-size:10px;line-height:1.35}.median-marker{font-weight:800;color:#fff}
+@media(max-width:760px){.toolbar{left:46px;right:8px;min-width:0}.main-service-filters{top:auto;bottom:12px;left:8px;right:8px;width:auto;max-height:42vh;overflow:auto}.legend{bottom:12px;right:8px;max-width:230px}.main-service-filters[open]+.legend{display:none}}
+
+.leaflet-control-attribution{font-size:9px}
+
+.political-controls{display:grid;grid-template-columns:1fr;gap:7px;width:100%}.political-controls select{width:100%;background:#13263a;color:#fff;border:1px solid #39516b;border-radius:8px;padding:7px;font-size:12px}.political-legend{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}.political-legend span{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#d5e0eb}.political-legend i{width:10px;height:10px;display:inline-block;border-radius:50%;box-shadow:0 0 0 2px #fff9 inset}.political-medallion-icon{background:transparent;border:0}.political-medallion{--party:#7b8794;--score:50;position:relative;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:conic-gradient(var(--party) calc(var(--score)*1%),rgba(255,255,255,.35) 0);box-shadow:0 1px 4px #0008;cursor:pointer}.political-medallion:before{content:"";position:absolute;inset:3px;border-radius:50%;background:rgba(255,255,255,.94);border:1px solid rgba(7,17,27,.28)}.political-medallion span{position:relative;z-index:1;color:#14202d;font-weight:900;font-size:7px;line-height:1;letter-spacing:-.2px}.political-medallion:hover{transform:scale(1.16)}.political-note{color:#a9bdd2;font-size:10px;line-height:1.35}
+.commerce-poi{background:#fff;border:2px solid #244b6b;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;box-shadow:0 1px 4px #0007}.commerce-poi.supermarket{border-color:#7b2d8e}.commerce-poi.food{border-color:#d47b1f}.commerce-poi.bakery{border-color:#9b5c24}.commerce-poi.pharmacy{border-color:#27864a}</style></head><body><div id="map"></div>
+<div class="toolbar">
+<div class="toolbar-title">Découpage de la carte</div>
+<label>Territoire<select id="territory"><option value="iris" selected>IRIS (88 zones)</option><option value="bureau">Bureaux de vote (139)</option></select></label>
+<label>Affichage<select id="displayMode"><option value="single">Critère unique</option><option value="compare2">Comparer 2 critères</option><option value="compare3">Comparer 3 critères</option><option value="compare4">Comparer 4 critères</option></select></label>
+<label id="singleLabel">Indicateur<select id="indicator"></select></label>
+<div id="compareControls" class="compare-controls">
+<label>Critère 1<select id="indicatorA"></select></label>
+<label>Critère 2<select id="indicatorB"></select></label>
+<label id="criterion3Label">Critère 3<select id="indicatorC"></select></label>
+<label id="criterion4Label">Critère 4<select id="indicatorD"></select></label>
+</div>
+</div>
+<details class="main-service-filters">
+  <summary>Services et mobilités</summary>
+  <div class="main-filter-body">
+    <div class="main-filter-row">
+      <span class="main-filter-row-title">Lignes de tramway</span>
+      <button class="main-filter-btn tram-main-filter" data-line="1">L1</button>
+      <button class="main-filter-btn tram-main-filter" data-line="2">L2</button>
+      <button class="main-filter-btn tram-main-filter" data-line="3">L3</button>
+      <button class="main-filter-btn tram-main-filter" data-line="4">L4</button>
+      <button class="main-filter-btn tram-main-filter" data-line="5">L5</button>
+    </div>
+    <div class="main-filter-row">
+      <span class="main-filter-row-title">Couches cartographiques</span>
+      <button class="main-filter-btn layer-main-filter" data-layer="tramStops">Stations tram</button>
+      <button class="main-filter-btn layer-main-filter" data-layer="busStops">Arrêts bus</button>
+      <button class="main-filter-btn layer-main-filter" data-layer="cycle">Aménagements vélo</button>
+      <button class="main-filter-btn layer-main-filter" data-layer="rev">REV</button>
+      <button class="main-filter-btn layer-main-filter" data-layer="velomagg">Vélomagg</button>
+      <button class="main-filter-btn layer-main-filter" data-layer="bikeCounters">Compteurs vélo</button>
+      <button class="main-filter-btn layer-main-filter major" data-layer="majorWorks">Chantiers longs</button>
+    </div>
+    <div class="main-filter-row political-controls">
+      <span class="main-filter-row-title">Commerces alimentaires</span><button class="main-filter-btn commerce-filter" data-commerce="food_store">Supermarchés, supérettes et épiceries</button><span class="main-filter-row-title">Résultats politiques</span>
+      <select id="politicalElection" aria-label="Scrutin politique"></select>
+      <button class="main-filter-btn" id="politicalToggle" type="button">Afficher les vainqueurs</button>
+      <div id="politicalLegend" class="political-legend"></div>
+      <small class="political-note">Un médaillon discret par bureau : anneau aux couleurs du parti, progression de l’anneau proportionnelle au score du candidat arrivé en tête.</small>
+    </div>
+    <small>Les couches sont désactivées au démarrage pour préserver la lisibilité de la carte.</small>
+  </div>
+</details>
+<details class="legend" open><summary id="legendTitle">IRIS de Montpellier</summary><div class="legend-body">
+<div id="singleLegend"><div id="classLegend" class="class-legend"></div></div>
+<div id="compareLegend" style="display:none"><div id="multiCriteriaLegend" class="multi-criteria-legend"></div></div>
+<span class="legend-help" id="legendText">Clique sur un IRIS pour afficher son profil complet.</span>
+</div></details>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script><script src="../data/bureau_polygons.js"></script><script src="../data/demographics.js"></script><script src="../data/socioeconomic.js"></script><script src="../data/iris_montpellier.js"></script><script src="../data/services_population.js"></script>
+<script src="../data/participation.js"></script><script src="../data/fiscal_crosswalk.js"></script><script src="../data/election_results.js"></script><script src="../data/immo_commerce_pack.js"></script><script>
+const D=window.DEMOGRAPHICS,S=window.SOCIOECONOMIC,I=window.IRIS_MONTPELLIER,SP=window.SERVICES_POPULATION;
+let fiscalData={};
+try{fiscalData=JSON.parse(localStorage.getItem('filosofiFiscalIris2021')||'{}')}catch(e){fiscalData={}}
+function applyFiscalDataToMap(){
+  S.iris=S.iris||{};
+  Object.entries(fiscalData).forEach(([code,v])=>{
+    let target;
+    if(Array.isArray(S.iris)) target=S.iris.find(x=>String(x.code_iris||x.CODE_IRIS_STD)===String(code));
+    else target=S.iris[code]||(S.iris[code]={code_iris:code});
+    if(target){
+      target.pct_menages_imposes=v.pct_menages_imposes;
+      target.pct_impots_revenu=v.pct_impots_revenu;
+    }
+  });
+  S.bureaux=S.bureaux||{};
+  Object.entries(window.FISCAL_CROSSWALK||{}).forEach(([bid,parts])=>{
+    const vals=parts.map(p=>({w:Number(p.share)||0,v:fiscalData[p.iris]})).filter(x=>x.v);
+    if(!vals.length)return;
+    const target=S.bureaux[bid]||(S.bureaux[bid]={bureau:Number(bid)});
+    const weighted=key=>{
+      const ok=vals.filter(x=>x.v[key]!==null&&x.v[key]!==undefined&&Number.isFinite(Number(x.v[key])));
+      const sw=ok.reduce((s,x)=>s+x.w,0);
+      return sw?ok.reduce((s,x)=>s+x.w*Number(x.v[key]),0)/sw:null;
+    };
+    target.pct_menages_imposes=weighted('pct_menages_imposes');
+    target.pct_impots_revenu=weighted('pct_impots_revenu');
+  });
+}
+function irisFiscal(code){
+  if(Array.isArray(S.iris))return S.iris.find(x=>String(x.code_iris||x.CODE_IRIS_STD)===String(code))||{};
+  return S.iris?.[code]||{};
+}
+applyFiscalDataToMap();
+const map=L.map('map',{zoomControl:true}).setView([43.6119,3.8772],12.7);
+map.createPane('serviceLinesPane');
+map.getPane('serviceLinesPane').style.zIndex='520';
+map.createPane('servicePointsPane');
+map.getPane('servicePointsPane').style.zIndex='540';
+map.createPane('serviceWorksPane');
+map.getPane('serviceWorksPane').style.zIndex='560';
+map.getPane('serviceLinesPane').style.pointerEvents='auto';
+map.getPane('servicePointsPane').style.pointerEvents='auto';
+map.getPane('serviceWorksPane').style.pointerEvents='auto';
+map.createPane('politicalPane');
+map.getPane('politicalPane').style.zIndex='590';
+map.getPane('politicalPane').style.pointerEvents='auto';
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap'}).addTo(map);
+
+const commerceLayers={};
+const commerceIcons={food_store:'🛒'};
+['food_store'].forEach(type=>{
+ const pts=(window.IMMO_COMMERCE_PACK?.pois||[]).filter(p=>p.type===type).map(p=>L.marker([p.lat,p.lon],{pane:'servicePointsPane',icon:L.divIcon({className:'',html:`<div class="commerce-poi ${type}">${commerceIcons[type]}</div>`,iconSize:[18,18],iconAnchor:[9,9]})}).bindPopup(`<b>${p.name}</b><br>${'Supermarché, supérette ou épicerie'}`));
+ commerceLayers[type]=L.layerGroup(pts);
+});
+document.querySelectorAll('.commerce-filter').forEach(btn=>btn.addEventListener('click',()=>{const l=commerceLayers[btn.dataset.commerce],on=!map.hasLayer(l); if(on)l.addTo(map); else map.removeLayer(l); btn.classList.toggle('active',on);}));
+
+
+const serviceLayers={};
+function addServiceLayer(name,data,options){if(data)serviceLayers[name]=L.geoJSON(data,options)}
+if(SP){
+ const lineColors={'1':'#0057a7','2':'#ef7d00','3':'#7c2b83','4':'#b5121b','5':'#79b82a'};
+ for(const line of ['1','2','3','4','5']){
+   addServiceLayer('tram'+line,{type:'FeatureCollection',features:SP.geo.tram_lines.features.filter(f=>String(Math.round(Number(f.properties.num_exploi)))===line)},{pane:'serviceLinesPane',style:{color:lineColors[line],weight:5,opacity:.9}});
+ }
+ addServiceLayer('tramStops',SP.geo.tram_stops,{pane:'servicePointsPane',pointToLayer:(f,ll)=>L.circleMarker(ll,{pane:'servicePointsPane',radius:4,color:'#fff',weight:1,fillColor:'#e24',fillOpacity:1}),onEachFeature:(f,l)=>l.bindPopup(`<b>${f.properties.descriptio}</b><br>Lignes ${f.properties.lignes_pas}`)});
+ addServiceLayer('busStops',SP.geo.bus_stops,{pane:'servicePointsPane',pointToLayer:(f,ll)=>L.circleMarker(ll,{pane:'servicePointsPane',radius:2.7,color:'#2676aa',weight:0,fillOpacity:.75}),onEachFeature:(f,l)=>l.bindPopup(`<b>${f.properties.descriptio}</b><br>Lignes ${f.properties.lignes_pas}`)});
+ addServiceLayer('cycle',SP.geo.cycle,{pane:'serviceLinesPane',style:{color:'#32a852',weight:2,opacity:.72}});
+ addServiceLayer('rev',SP.geo.rev,{pane:'serviceLinesPane',style:{color:'#00a878',weight:4,opacity:.9,dashArray:'8 5'}});
+ addServiceLayer('velomagg',SP.geo.velomagg,{pane:'servicePointsPane',pointToLayer:(f,ll)=>L.circleMarker(ll,{pane:'servicePointsPane',radius:5,color:'#fff',weight:1,fillColor:'#f0a020',fillOpacity:1}),onEachFeature:(f,l)=>l.bindPopup(`<b>${f.properties.nom}</b><br>${f.properties.installati}`)});
+ addServiceLayer('bikeCounters',SP.geo.bike_counters,{pane:'servicePointsPane',pointToLayer:(f,ll)=>L.circleMarker(ll,{pane:'servicePointsPane',radius:5,color:'#fff',weight:1,fillColor:'#5f46c6',fillOpacity:1}),onEachFeature:(f,l)=>l.bindPopup(`<b>${f.properties.name}</b><br>Compteur ${f.properties.serial}`)});
+ addServiceLayer('majorWorksPoly',SP.geo.major_works_poly,{pane:'serviceWorksPane',style:{color:'#b02a37',weight:2,fillColor:'#d95763',fillOpacity:.24}});
+ addServiceLayer('majorWorksPoints',SP.geo.major_works_points,{pane:'serviceWorksPane',pointToLayer:(f,ll)=>L.circleMarker(ll,{pane:'serviceWorksPane',radius:6,color:'#fff',weight:1,fillColor:'#b02a37',fillOpacity:1}),onEachFeature:(f,l)=>{const p=f.properties;l.bindPopup(`<b>${p.adresse}</b><br>${p.nature} — ${p.type}<br>Du ${p.start} au ${p.end}<br>${p.duration_days} jours`)}});
+
+ document.querySelectorAll('.tram-main-filter').forEach(btn=>btn.addEventListener('click',()=>{
+   const layer=serviceLayers['tram'+btn.dataset.line];
+   const on=!map.hasLayer(layer);if(on)layer.addTo(map);else map.removeLayer(layer);
+   btn.classList.toggle('active',on)
+ }));
+ document.querySelectorAll('.layer-main-filter').forEach(btn=>btn.addEventListener('click',()=>{
+   const key=btn.dataset.layer,names=key==='majorWorks'?['majorWorksPoly','majorWorksPoints']:[key];
+   const on=names.some(n=>serviceLayers[n]&&!map.hasLayer(serviceLayers[n]));
+   names.forEach(n=>{const l=serviceLayers[n];if(!l)return;if(on){if(!map.hasLayer(l))l.addTo(map)}else if(map.hasLayer(l))map.removeLayer(l)});
+   btn.classList.toggle('active',on)
+ }));
+}
+
+
+const politicalElection=document.getElementById('politicalElection');
+const politicalToggle=document.getElementById('politicalToggle');
+const politicalLegend=document.getElementById('politicalLegend');
+const ER=window.ELECTION_RESULTS||{elections:[],territorial:{}};
+let politicalLayer=null;
+let politicalVisible=false;
+const politicalColors={
+  extreme_gauche:'#8f1531',lfi:'#e51b23',pcf:'#b5121b',ps:'#e84a8a',divers_gauche:'#f29abb',
+  ecologiste:'#45a049',centre_gauche:'#e76f51',centre:'#f2b134',modem:'#f28c28',
+  centre_droit:'#4d96ff',droite:'#2864b4',divers_droite:'#70a1df',
+  extreme_droite:'#1e3a66',reconquete:'#14213d',regionaliste:'#7651a8',divers:'#7b8794'
+};
+function normalizeText(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()}
+function politicalFamily(name,key){
+ const t=normalizeText(`${name} ${key}`);
+ if(/lutte ouvriere|revolution permanente|npa|anticapital|travailleur/.test(t))return ['Extrême gauche','extreme_gauche'];
+ if(/reconquete|zemmour|marechal/.test(t))return ['Reconquête','reconquete'];
+ if(/marine le pen|le pen marine|jean marie le pen|le pen jean marie|rassemblement national|liberer montpellier|jamet|\brn\b|delapierre/.test(` ${t} `))return ['Rassemblement national','extreme_droite'];
+ if(/jean luc melenchon|melenchon jean luc|melenchon|oziol|belaouni|insoumis|\blfi\b|france insoumise/.test(` ${t} `))return ['La France insoumise','lfi'];
+ if(/fabien roussel|roussel fabien|parti communiste|\bpcf\b|communiste/.test(` ${t} `))return ['Parti communiste','pcf'];
+ if(/francois hollande|hollande francois|benoit hamon|hamon benoit|glucksmann|parti socialiste|\bps\b|socialiste|delafosse|dombre coste/.test(` ${t} `))return ['Parti socialiste','ps'];
+ if(/yannick jadot|jadot yannick|ecolog|vert|roumegas|printemps|tondelier/.test(t))return ['Écologistes','ecologiste'];
+ if(/front populaire|nouveau front populaire|divers gauche|gauche|demain montpellier/.test(t))return ['Divers gauche / alliance','divers_gauche'];
+ if(/modem|mouvement democrate/.test(t))return ['MoDem','modem'];
+ if(/emmanuel macron|macron emmanuel|renaissance|ensemble|macron|horizons|miralles|vignal/.test(t))return ['Centre','centre'];
+ if(/divers droite/.test(t))return ['Divers droite','divers_droite'];
+ if(/nicolas sarkozy|sarkozy nicolas|francois fillon|fillon francois|valerie pecresse|pecresse valerie|republicain|les republicains|\blr\b|cristol|alloncle|perrein/.test(` ${t} `))return ['Les Républicains','droite'];
+ if(/regional|occitan/.test(t))return ['Régionalistes','regionaliste'];
+ return ['Divers / sans nuance renseignée','divers'];
+}
+function candidateInitials(name){
+ const cleaned=String(name||'').replace(/\([^)]*\)/g,' ').replace(/[^A-Za-zÀ-ÿ -]/g,' ').trim();
+ const words=cleaned.split(/\s+/).filter(w=>w.length>2&&!['voix','liste','pour','avec','montpellier'].includes(normalizeText(w)));
+ return words.slice(-2).map(w=>w[0]).join('').toUpperCase().slice(0,2)||'•';
+}
+function selectedPoliticalElection(){return ER.elections.find(e=>e.id===politicalElection.value)}
+function politicalTerritory(){const e=selectedPoliticalElection();return e?ER.territorial?.[e.id]:null}
+function winnerForBureau(id){
+ const record=politicalTerritory()?.bureaux?.[String(id)];
+ if(!record?.parties)return null;
+ const entries=Object.entries(record.parties).map(([key,v])=>({key,...v})).filter(x=>Number.isFinite(Number(x.pct)));
+ entries.sort((a,b)=>Number(b.pct)-Number(a.pct));
+ return entries[0]||null;
+}
+function updatePoliticalLegend(families){
+ politicalLegend.innerHTML=[...families].map(([label,key])=>`<span><i style="background:${politicalColors[key]}"></i>${label}</span>`).join('');
+}
+function buildPoliticalLayer(){
+ if(politicalLayer){map.removeLayer(politicalLayer);politicalLayer=null}
+ if(!politicalVisible)return;
+ const election=selectedPoliticalElection(),territorial=politicalTerritory();
+ if(!election||!territorial?.bureaux)return;
+ const markers=[],families=new Map();
+ (window.bureauPolygons?.features||[]).forEach(f=>{
+   const id=bureauId(f),winner=winnerForBureau(id);if(!winner)return;
+   const [family,familyKey]=politicalFamily(winner.name,winner.key);families.set(family,familyKey);
+   const c=L.geoJSON(f).getBounds().getCenter(),color=politicalColors[familyKey];
+   const score=Math.max(0,Math.min(100,Number(winner.pct)||0));
+   const icon=L.divIcon({className:'political-medallion-icon',html:`<div class="political-medallion" style="--party:${color};--score:${score}" title="${winner.name}"><span>${candidateInitials(winner.name)}</span></div>`,iconSize:[24,24],iconAnchor:[12,12]});
+   const marker=L.marker(c,{pane:'politicalPane',icon,keyboard:true});
+   const second=Object.entries(territorial.bureaux[String(id)].parties||{}).map(([key,v])=>({key,...v})).sort((a,b)=>Number(b.pct)-Number(a.pct))[1];
+   marker.bindPopup(`<b>Bureau ${id}</b><br>${election.label}<hr><b>${winner.name}</b><br>${family}<br>${Number(winner.pct).toLocaleString('fr-FR',{maximumFractionDigits:1})} % · ${Number(winner.votes||0).toLocaleString('fr-FR')} voix${second?`<br><small>2e : ${second.name} — ${Number(second.pct).toLocaleString('fr-FR',{maximumFractionDigits:1})} %</small>`:''}`);
+   markers.push(marker);
+ });
+ politicalLayer=L.layerGroup(markers).addTo(map);
+ updatePoliticalLegend(families);
+}
+function populatePoliticalElections(){
+ const available=ER.elections.filter(e=>ER.territorial?.[e.id]?.bureaux&&Object.keys(ER.territorial[e.id].bureaux).length);
+ politicalElection.innerHTML=available.map(e=>`<option value="${e.id}">${e.label}</option>`).join('');
+ const preferred=available.find(e=>e.id==='mun2026_t2')||available.find(e=>e.id==='leg2024_t2')||available[0];
+ if(preferred)politicalElection.value=preferred.id;
+}
+populatePoliticalElections();
+politicalToggle?.addEventListener('click',()=>{
+ politicalVisible=!politicalVisible;
+ politicalToggle.classList.toggle('active',politicalVisible);
+ politicalToggle.textContent=politicalVisible?'Masquer les vainqueurs':'Afficher les vainqueurs';
+ buildPoliticalLayer();
+});
+politicalElection?.addEventListener('change',()=>{if(politicalVisible)buildPoliticalLayer()});
+
+const territory=document.getElementById('territory');
+const displayMode=document.getElementById('displayMode');
+const indicator=document.getElementById('indicator');
+const indicatorA=document.getElementById('indicatorA');
+const indicatorB=document.getElementById('indicatorB');
+const indicatorC=document.getElementById('indicatorC');
+const indicatorD=document.getElementById('indicatorD');
+const criterion3Label=document.getElementById('criterion3Label');
+const criterion4Label=document.getElementById('criterion4Label');
+const compareControls=document.getElementById('compareControls');
+const singleLabel=document.getElementById('singleLabel');
+let layer,labelLayer,current='iris';
+const bureauLayers={},irisLayers={};
+
+const configs={
+ iris:{
+  population:['Population','number'],
+  pct_chomage:['Chômage des 15–64 ans','pct'],
+  pct_familles_monoparentales:['Familles monoparentales','pct'],
+  pct_superieur:['Diplômés du supérieur','pct'],
+  pct_sans_diplome:['Sans diplôme','pct'],
+  pct_cadres:['Cadres','pct'],
+  pct_prof_intermediaires:['Professions intermédiaires','pct'],
+  pct_employes:['Employés','pct'],
+  pct_ouvriers:['Ouvriers','pct'],
+  pct_18_24:['18–24 ans','pct'],
+  pct_65_plus:['65 ans et plus','pct'],
+  pct_femmes:['Femmes','pct'],
+  pct_menages_imposes:['Ménages fiscaux imposés','pct'],
+  pct_impots_revenu:['Part des impôts dans le revenu disponible','pct'],
+  participation_weighted:['Participation pondérée estimée','pct'],
+  participation_recent:['Participation 2024 estimée','pct'],
+  participation_reserve:['Réserve de mobilisation estimée','pct'],
+  prix_m2_median_global:['Prix médian au m²','money'],
+  evolution_prix_2021_2025_pct:['Évolution du prix 2021–2025','pct'],
+  osm_commerces_pour_1000_hab:['Commerces pour 1 000 habitants','number'],
+  osm_commerces_alimentaires_stricts_pour_1000_hab:['Supermarchés, supérettes et épiceries pour 1 000 habitants','number'],
+  distance_marche_estimee_alimentation_m:['Distance de marche estimée vers alimentation','distance'],
+  temps_marche_estime_alimentation_min:['Temps de marche estimé vers alimentation','minutes']
+ },
+ bureau:{
+  registered:['Inscrits','number'],
+  pct_chomage:['Chômage des 15–64 ans','pct'],
+  pct_familles_monoparentales:['Familles monoparentales','pct'],
+  womenPct:['Femmes','pct'],
+  medianAge:['Âge médian','age'],
+  youngPct:['18–29 ans','pct'],
+  seniorPct:['65 ans et plus','pct'],
+  pct_superieur:['Diplômés du supérieur','pct'],
+  pct_sans_diplome:['Sans diplôme','pct'],
+  pct_cadres:['Cadres','pct'],
+  pct_prof_intermediaires:['Professions intermédiaires','pct'],
+  pct_employes:['Employés','pct'],
+  pct_ouvriers:['Ouvriers','pct'],
+  pct_logements_sociaux:['Logements sociaux','pct'],
+  pct_menages_pauvres:['Ménages pauvres','pct'],
+  pct_proprietaires:['Propriétaires','pct'],
+  pct_menages_imposes:['Ménages fiscaux imposés estimés','pct'],
+  pct_impots_revenu:['Part des impôts estimée','pct'],
+  participation_weighted:['Participation pondérée','pct'],
+  participation_recent:['Participation 2024','pct'],
+  participation_reserve:['Réserve de mobilisation','pct']
+ }
+};
+
+function fmt(v,t='pct'){
+ if(v==null||!isFinite(v))return '—';
+ if(t==='number')return new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0}).format(v);
+ if(t==='age')return Number(v).toLocaleString('fr-FR',{maximumFractionDigits:1})+' ans';
+ if(t==='money')return Number(v).toLocaleString('fr-FR',{maximumFractionDigits:0})+' €/m²';
+ if(t==='distance')return Number(v).toLocaleString('fr-FR',{maximumFractionDigits:0})+' m';
+ if(t==='minutes')return Number(v).toLocaleString('fr-FR',{maximumFractionDigits:0})+' min';
+ if(t==='score')return Number(v).toLocaleString('fr-FR',{maximumFractionDigits:0})+'/100';
+ return Number(v).toLocaleString('fr-FR',{maximumFractionDigits:1})+' %';
+}
+function enrichBureau(b){
+ const d=D.bureaux[b]||{},s=S.bureaux[b]||{};
+ const sum=a=>a.reduce((x,k)=>x+(d.ages?.[k]||0),0);
+ const p=window.PARTICIPATION_DATA?.bureaux?.[String(b)]||{};
+ return {...d,...s,
+  participation_weighted:p.weighted_turnout,
+  participation_recent:p.recent_turnout,
+  participation_reserve:p.reserve_score,
+  youngPct:d.registered?100*sum(['18–19','20–24','25–29'])/d.registered:0,
+  seniorPct:d.registered?100*sum(['65–69','70–74','75–79','80–84','85+'])/d.registered:0
+ };
+}
+function bureauId(f){return String(f.properties.bureau??f.properties.BUREAU??f.properties.code??f.properties.numero??'')}
+function dataForFeature(f){
+ if(current==='iris'){
+  const p=f.properties||{};
+  const part=window.PARTICIPATION_DATA?.iris?.[String(p.code_iris)]||{};
+  const fiscal=irisFiscal(String(p.code_iris));
+  const ic=window.IMMO_COMMERCE_PACK?.iris?.[String(p.code_iris)]||{};
+  return {...p,...fiscal,...ic,
+   participation_weighted:part.weighted_turnout,
+   participation_recent:part.recent_turnout,
+   participation_reserve:part.reserve_score
+  };
+ }
+ return enrichBureau(bureauId(f));
+}
+function features(){return current==='iris'?I.features:bureauPolygons.features}
+function vals(key){
+ return features().map(f=>Number(dataForFeature(f)[key])).filter(Number.isFinite).sort((a,b)=>a-b);
+}
+function quantile(a,q){
+ if(!a.length)return 0;
+ const p=(a.length-1)*q,lo=Math.floor(p),hi=Math.ceil(p);
+ return lo===hi?a[lo]:a[lo]+(a[hi]-a[lo])*(p-lo);
+}
+const strictPalette=['#eef3f8','#d2dfef','#adc5e3','#7ea6d1','#4f83ba','#275d94','#103d6d'];
+
+function classDefinition(key){
+  const [,type]=configs[current][key];
+  const values=vals(key);
+  if(type==='pct'){
+    const maximum=Math.max(...values,10);
+    return {type,start:0,step:5,end:Math.max(10,Math.ceil(maximum/5)*5)};
+  }
+  if(type==='money'||type==='distance'||type==='score'){
+    const minimum=Math.min(...values),maximum=Math.max(...values); const raw=(maximum-minimum)/6; const step=Math.max(type==='score'?5:type==='distance'?100:100,Math.ceil(raw/(type==='score'?5:type==='distance'?100:100))*(type==='score'?5:type==='distance'?100:100));
+    return {type,start:Math.floor(minimum/step)*step,step,end:Math.ceil(maximum/step)*step};
+  }
+  if(type==='age'){
+    const minimum=Math.min(...values,0),maximum=Math.max(...values,5);
+    return {type,start:Math.floor(minimum/5)*5,step:5,end:Math.ceil(maximum/5)*5};
+  }
+  const minimum=Math.min(...values,0),maximum=Math.max(...values,1);
+  const raw=(maximum-minimum)/6;
+  const step=Math.max(1,Math.ceil(raw/100)*100);
+  return {type,start:Math.floor(minimum/step)*step,step,end:Math.ceil(maximum/step)*step};
+}
+
+function strictClasses(key){
+  const def=classDefinition(key),classes=[];
+  for(let min=def.start;min<def.end;min+=def.step){
+    classes.push({min,max:min+def.step});
+    if(classes.length===7)break;
+  }
+  if(!classes.length)classes.push({min:def.start,max:def.start+def.step});
+  return {def,classes};
+}
+
+const medianPalette=['#082b4c','#16486f','#286b96','#5d94b5','#a9c4d3','#e5e8e6','#edc79d','#e9a15c','#e47d2f','#dc5b13','#bd3f08'];
+function hexToRgb(hex){
+ const h=hex.replace('#','');
+ return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];
+}
+function rgbToHex(rgb){
+ return '#'+rgb.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');
+}
+function mixColor(a,b,t){
+ const ca=hexToRgb(a),cb=hexToRgb(b);
+ return rgbToHex(ca.map((v,i)=>v+(cb[i]-v)*t));
+}
+function divergingColor(position){
+ const p=Math.max(-1,Math.min(1,position));
+ if(p<0)return mixColor('#082b4c','#e5e8e6',p+1);
+ return mixColor('#e5e8e6','#dc5b13',p);
+}
+function medianScale(key){
+ const values=vals(key).filter(Number.isFinite).sort((a,b)=>a-b);
+ const med=quantile(values,.5);
+ const type=configs[current][key][1];
+ if(type==='pct'){
+   const step=2;
+   const maxAbs=Math.max(
+     step,
+     Math.ceil(Math.max(...values.map(v=>Math.abs(v-med)))/step)*step
+   );
+   return {median:med,type,step,maxAbs};
+ }
+ if(type==='age')return {median:med,type,step:1,maxAbs:Math.max(1,Math.ceil(Math.max(...values.map(v=>Math.abs(v-med)))))};
+ const q25=quantile(values,.25),q75=quantile(values,.75);
+ const step=Math.max(1,Math.round((q75-q25)/2));
+ const maxAbs=Math.max(step,Math.ceil(Math.max(...values.map(v=>Math.abs(v-med)))/step)*step);
+ return {median:med,type,step,maxAbs};
+}
+function medianClasses(key){
+ const s=medianScale(key),classes=[];
+ for(let start=-s.maxAbs;start<s.maxAbs;start+=s.step){
+   const end=start+s.step;
+   const center=(start+end)/2;
+   classes.push({
+     min:s.median+start,
+     max:s.median+end,
+     deltaMin:start,
+     deltaMax:end,
+     color:divergingColor(center/s.maxAbs)
+   });
+ }
+ return {scale:s,classes};
+}
+function medianColor(value,key){
+ if(!Number.isFinite(value))return '#b8bec5';
+ const {scale,classes}=medianClasses(key);
+ const found=classes.find(c=>value>=c.min&&value<c.max);
+ if(found)return found.color;
+ return value<scale.median?divergingColor(-1):divergingColor(1);
+}
+function strictColor(value,key){return medianColor(value,key)}
+
+function formatBoundary(value,type){
+  if(type==='money')return Math.round(value)+' €/m²';
+  if(type==='distance')return Math.round(value)+' m';
+  if(type==='score')return Math.round(value)+'/100';
+  if(type==='number')return new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0}).format(value);
+  if(type==='age')return Math.round(value)+' ans';
+  return Math.round(value)+' %';
+}
+const biColors=[
+ ['#e8e8e8','#ace4e4','#5ac8c8'],
+ ['#dfb0d6','#a5add3','#5698b9'],
+ ['#be64ac','#8c62aa','#3b4994']
+];
+function class3(v,key){
+ const a=vals(key);
+ if(!Number.isFinite(v)||!a.length)return null;
+ const q1=quantile(a,1/3),q2=quantile(a,2/3);
+ return v<=q1?0:v<=q2?1:2;
+}
+function selectedCompareKeys(){
+ const mode=displayMode.value;
+ if(mode==='compare2')return [indicatorA.value,indicatorB.value];
+ if(mode==='compare3')return [indicatorA.value,indicatorB.value,indicatorC.value];
+ if(mode==='compare4')return [indicatorA.value,indicatorB.value,indicatorC.value,indicatorD.value];
+ return [];
+}
+function pairedValues(keyA,keyB){
+ const source=current==='iris'?I:bureauPolygons;
+ const pairs=[];
+ source.features.forEach(f=>{
+   const d=dataForFeature(f),a=Number(d[keyA]),b=Number(d[keyB]);
+   if(Number.isFinite(a)&&Number.isFinite(b))pairs.push([a,b]);
+ });
+ return pairs;
+}
+function pearsonCorrelation(keyA,keyB){
+ const pairs=pairedValues(keyA,keyB),n=pairs.length;
+ if(n<3)return {r:null,n};
+ const meanA=pairs.reduce((s,p)=>s+p[0],0)/n;
+ const meanB=pairs.reduce((s,p)=>s+p[1],0)/n;
+ let num=0,denA=0,denB=0;
+ pairs.forEach(([a,b])=>{
+   const da=a-meanA,db=b-meanB;
+   num+=da*db;denA+=da*da;denB+=db*db;
+ });
+ const den=Math.sqrt(denA*denB);
+ return {r:den?num/den:null,n};
+}
+function correlationLabel(r){
+ if(!Number.isFinite(r))return {strength:'Corrélation non calculable',direction:'',color:'#b8bec5'};
+ const a=Math.abs(r);
+ let strength='Très faible';
+ if(a>=.8)strength='Très élevée';
+ else if(a>=.6)strength='Élevée';
+ else if(a>=.4)strength='Modérée';
+ else if(a>=.2)strength='Faible';
+ const direction=r>0?'positive':r<0?'négative':'nulle';
+ const color=r<0
+   ? (a>=.8?'#082b4c':a>=.6?'#16486f':a>=.4?'#286b96':a>=.2?'#5d94b5':'#a9c4d3')
+   : (a>=.8?'#bd3f08':a>=.6?'#dc5b13':a>=.4?'#e47d2f':a>=.2?'#e9a15c':'#edc79d');
+ return {strength:`${strength}${direction?` ${direction}`:''}`,direction,color};
+}
+function correlationScaleHtml(){
+ return `<div class="correlation-scale">
+   <div class="correlation-scale-row"><i style="background:#082b4c"></i><span>−1,00 à −0,80 : très élevée négative</span></div>
+   <div class="correlation-scale-row"><i style="background:#286b96"></i><span>−0,79 à −0,40 : modérée à élevée négative</span></div>
+   <div class="correlation-scale-row"><i style="background:#e5e8e6"></i><span>−0,19 à +0,19 : très faible ou nulle</span></div>
+   <div class="correlation-scale-row"><i style="background:#e47d2f"></i><span>+0,40 à +0,79 : modérée à élevée positive</span></div>
+   <div class="correlation-scale-row"><i style="background:#bd3f08"></i><span>+0,80 à +1,00 : très élevée positive</span></div>
+ </div>`;
+}
+function correlationSummaryHtml(keyA,keyB){
+ const result=pearsonCorrelation(keyA,keyB),info=correlationLabel(result.r);
+ const nameA=configs[current][keyA][0],nameB=configs[current][keyB][0];
+ const rText=Number.isFinite(result.r)?result.r.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2}):'—';
+ return `<div class="correlation-summary">
+   <div class="correlation-strength">${info.strength}</div>
+   <div class="correlation-coef" style="color:${info.color}">r = ${rText}</div>
+   <div class="correlation-detail">${nameA} ↔ ${nameB}<br>${result.n} territoires avec données complètes.<br>Le coefficient mesure une relation linéaire territoriale, pas un lien de causalité.</div>
+   ${correlationScaleHtml()}
+ </div>`;
+}
+function correlationMatrixHtml(keys){
+ const names=keys.map(k=>configs[current][k][0]);
+ const short=names.map((n,i)=>`C${i+1}`);
+ let rows=`<tr><th></th>${short.map(s=>`<th>${s}</th>`).join('')}</tr>`;
+ keys.forEach((ka,i)=>{
+   rows+=`<tr><th>${short[i]}</th>`;
+   keys.forEach((kb,j)=>{
+     if(i===j)rows+=`<td style="background:#36485c">1,00</td>`;
+     else{
+       const {r}=pearsonCorrelation(ka,kb),info=correlationLabel(r);
+       const value=Number.isFinite(r)?r.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2}):'—';
+       rows+=`<td style="background:${info.color}">${value}</td>`;
+     }
+   });
+   rows+='</tr>';
+ });
+ const labels=names.map((n,i)=>`<div><b>${short[i]}</b> : ${n}</div>`).join('');
+ const pairs=[];
+ for(let i=0;i<keys.length;i++)for(let j=i+1;j<keys.length;j++){
+   const {r,n}=pearsonCorrelation(keys[i],keys[j]),info=correlationLabel(r);
+   pairs.push({a:names[i],b:names[j],r,n,info});
+ }
+ pairs.sort((x,y)=>Math.abs(y.r||0)-Math.abs(x.r||0));
+ const pairHtml=pairs.map(p=>`<div class="correlation-pair"><span>${p.a} ↔ ${p.b}<br><small>${p.info.strength} · ${p.n} territoires</small></span><b style="color:${p.info.color}">r = ${Number.isFinite(p.r)?p.r.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2}):'—'}</b></div>`).join('');
+ return `<div class="correlation-summary">
+   <div class="correlation-strength">Matrice des corrélations</div>
+   <table class="correlation-matrix">${rows}</table>
+   <div class="correlation-detail">${labels}</div>
+   <div class="correlation-pairs">${pairHtml}</div>
+   <div class="correlation-detail">Lecture : plus |r| se rapproche de 1, plus la relation linéaire est forte. Le signe indique le sens de la relation.</div>
+   ${correlationScaleHtml()}
+ </div>`;
+}
+function normalizedClass(value,key){
+ if(!Number.isFinite(value))return null;
+ const {classes}=strictClasses(key);
+ let index=classes.findIndex(c=>value>=c.min&&value<c.max);
+ if(index<0)index=value<classes[0].min?0:classes.length-1;
+ return classes.length<=1?0:index/(classes.length-1);
+}
+function compositeColor(values){
+ const valid=values.filter(Number.isFinite);
+ if(!valid.length)return '#b8bec5';
+ const score=valid.reduce((a,b)=>a+b,0)/valid.length;
+ const idx=Math.max(0,Math.min(strictPalette.length-1,Math.round(score*(strictPalette.length-1))));
+ return strictPalette[idx];
+}
+function colorFor(f){
+ const d=dataForFeature(f);
+ if(displayMode.value==='single')return strictColor(Number(d[indicator.value]),indicator.value);
+
+ const keys=selectedCompareKeys();
+ if(keys.length===2){
+   const x=class3(Number(d[keys[0]]),keys[0]);
+   const y=class3(Number(d[keys[1]]),keys[1]);
+   return x==null||y==null?'#b8bec5':biColors[y][x];
+ }
+
+ const normalized=keys.map(k=>normalizedClass(Number(d[k]),k));
+ if(normalized.some(v=>v===null))return '#b8bec5';
+ return compositeColor(normalized);
+}
+function populateSelects(){
+ const cfg=configs[current];
+ [indicator,indicatorA,indicatorB,indicatorC,indicatorD].forEach(sel=>{
+  const previous=sel.value;
+  sel.innerHTML=Object.entries(cfg).map(([k,[label]])=>`<option value="${k}">${label}</option>`).join('');
+  if(cfg[previous])sel.value=previous;
+ });
+ if(current==='iris'){
+  indicator.value='pct_chomage';
+  indicatorA.value='pct_chomage';
+  indicatorB.value='pct_familles_monoparentales';
+  indicatorC.value='pct_menages_pauvres';
+  indicatorD.value='pct_superieur';
+ }else{
+  indicator.value='pct_chomage';
+  indicatorA.value='pct_menages_pauvres';
+  indicatorB.value='pct_chomage';
+  indicatorC.value='pct_familles_monoparentales';
+  indicatorD.value='pct_superieur';
+ }
+}
+function updateLegend(){
+ const compare=displayMode.value!=='single';
+ document.getElementById('singleLegend').style.display=compare?'none':'block';
+ document.getElementById('compareLegend').style.display=compare?'block':'none';
+
+ if(!compare){
+   const [name,type]=configs[current][indicator.value];
+   const {scale:s,classes}=medianClasses(indicator.value);
+   const f=v=>formatBoundary(v,type);
+   document.getElementById('legendTitle').textContent=name;
+   document.getElementById('classLegend').innerHTML=
+    classes.map(c=>{
+      const relation=c.deltaMax<=0
+        ? `${Math.abs(c.deltaMax).toLocaleString('fr-FR')} à ${Math.abs(c.deltaMin).toLocaleString('fr-FR')} points sous la médiane`
+        : c.deltaMin>=0
+          ? `${c.deltaMin.toLocaleString('fr-FR')} à ${c.deltaMax.toLocaleString('fr-FR')} points au-dessus`
+          : 'autour de la médiane';
+      return `<div class="class-row"><i class="class-swatch" style="background:${c.color}"></i><span>${f(c.min)} à ${f(c.max)}${type==='pct'?` · ${relation}`:''}</span></div>`;
+    }).join('')+
+    `<div class="class-row"><i class="class-swatch" style="background:#b8bec5"></i><span>Donnée indisponible</span></div>`;
+   document.getElementById('legendText').innerHTML=`<span class="median-marker">Médiane : ${f(s.median)}</span><br>${type==='pct'?'Chaque nuance représente exactement 2 points de pourcentage.':'Les intervalles sont adaptés à l’unité du critère.'} Bleu foncé : sous la médiane ; orange vif : au-dessus.`;
+   return;
+ }
+
+ const keys=selectedCompareKeys();
+ document.getElementById('legendTitle').textContent=keys.length===2?'Corrélation entre 2 critères':`Corrélations entre ${keys.length} critères`;
+ if(keys.length===2){
+   document.getElementById('multiCriteriaLegend').innerHTML=correlationSummaryHtml(keys[0],keys[1]);
+   document.getElementById('legendText').innerHTML='La couleur des territoires continue de montrer la combinaison des deux niveaux. Le bloc ci-dessus calcule la corrélation de Pearson sur tous les territoires disposant des deux valeurs.';
+ }else{
+   document.getElementById('multiCriteriaLegend').innerHTML=correlationMatrixHtml(keys);
+   document.getElementById('legendText').innerHTML='La matrice présente toutes les corrélations deux à deux. La couleur de la carte reste un indice combiné des critères sélectionnés.';
+ }
+}
+function tooltipHtml(f){
+ const d=dataForFeature(f);
+ const title=current==='iris'?(d.nom_iris||d.code_iris):`Bureau ${bureauId(f)}`;
+ if(displayMode.value==='single'){
+  const [name,type]=configs[current][indicator.value];
+  return `<b>${title}</b><br>${name} : ${fmt(d[indicator.value],type)}`;
+ }
+ const keys=selectedCompareKeys();
+ return `<b>${title}</b><br>`+keys.map(k=>{
+   const [name,type]=configs[current][k];
+   return `${name} : ${fmt(d[k],type)}`;
+ }).join('<br>');
+}
+function redraw(){
+ if(layer)map.removeLayer(layer);
+ if(labelLayer)map.removeLayer(labelLayer);
+ const source=current==='iris'?I:bureauPolygons;
+ layer=L.geoJSON(source,{
+  style:f=>({color:'#111',weight:1.15,fillColor:colorFor(f),fillOpacity:.76}),
+  onEachFeature:(f,l)=>{
+   const id=current==='iris'?String(f.properties.code_iris):bureauId(f);
+   if(current==='iris')irisLayers[id]=l;else bureauLayers[id]=l;
+   l.bindTooltip(()=>tooltipHtml(f),{className:'zone-tip',sticky:true});
+   l.on('click',()=>{
+    if(current==='iris')parent.postMessage({type:'iris-selected',properties:f.properties},'*');
+    else parent.postMessage({type:'bureau-selected',bureau:id},'*');
+   });
+  }
+ }).addTo(map);
+
+ const labels=[];
+ source.features.forEach(f=>{
+  const g=L.geoJSON(f),c=g.getBounds().getCenter();
+  if(current==='iris'){
+   const name=f.properties.nom_iris||f.properties.nom||f.properties.code_iris;
+   labels.push(L.marker(c,{interactive:false,icon:L.divIcon({className:'iris-name-icon',html:`<div class="iris-name">${name}</div>`,iconSize:[100,40]})}));
+  }else{
+   const b=bureauId(f);
+   labels.push(L.marker(c,{interactive:false,icon:L.divIcon({className:'zone-number-icon',html:`<div class="zone-number">${b}</div>`,iconSize:[28,22]})}));
+  }
+ });
+ labelLayer=L.layerGroup(labels).addTo(map);
+ Object.values(serviceLayers).forEach(serviceLayer=>{
+   if(map.hasLayer(serviceLayer) && typeof serviceLayer.bringToFront==='function')serviceLayer.bringToFront();
+ });
+ if(politicalVisible)buildPoliticalLayer();
+ updateLegend();
+}
+function updateModeControls(){
+ const mode=displayMode.value;
+ const compare=mode!=='single';
+ compareControls.classList.toggle('active',compare);
+ compareControls.classList.toggle('compare-3',mode==='compare3');
+ compareControls.classList.toggle('compare-4',mode==='compare4');
+ singleLabel.style.display=compare?'none':'grid';
+ criterion3Label.style.display=(mode==='compare3'||mode==='compare4')?'grid':'none';
+ criterion4Label.style.display=mode==='compare4'?'grid':'none';
+ redraw();
+}
+territory.addEventListener('change',()=>{
+ current=territory.value;
+ populateSelects();
+ redraw();
+});
+displayMode.addEventListener('change',updateModeControls);
+indicator.addEventListener('change',redraw);
+indicatorA.addEventListener('change',redraw);
+indicatorB.addEventListener('change',redraw);
+indicatorC.addEventListener('change',redraw);
+indicatorD.addEventListener('change',redraw);
+
+window.addEventListener('message',e=>{
+ if(e.data?.type==='fiscal-data-updated'){
+  try{fiscalData=JSON.parse(localStorage.getItem('filosofiFiscalIris2021')||'{}')}catch(err){fiscalData={}}
+  applyFiscalDataToMap();
+  populateSelects();
+  redraw();
+ }
+ if(e.data?.type==='select-bureau'){
+  const b=String(e.data.bureau),l=bureauLayers[b];
+  if(l){map.fitBounds(l.getBounds(),{padding:[35,35],maxZoom:16});l.openTooltip();}
+ }
+});
+
+populateSelects();
+criterion3Label.style.display='none';
+criterion4Label.style.display='none';
+redraw();
+</script></body></html>
